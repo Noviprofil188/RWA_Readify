@@ -1,27 +1,30 @@
 <template>
   <q-page padding>
-    <q-card dark bordered class="bg-grey-9 my-card">
-      <q-card-section>
-        <div class="text-h6 text-weight-bold">
-          O nama:
-        </div>
-        <p class="q-mt-sm text-body1" v-text="o_nama"></p>
-      </q-card-section>
-    </q-card>
+    <h1 class="text-h4 text-bold text-center">Prijava</h1>
+    <q-form class="q-gutter-md" @submit="handleLogin">
+      <q-input filled v-model="credentials.username" label="Korisničko ime" />
+      <q-input filled v-model="credentials.password" label="Lozinka" type="password" />
+      <q-btn type="submit" color="primary" label="Potvrdi" />
+    </q-form>
   </q-page>
 </template>
 
 <script>
+import { ref } from 'vue';
+
 export default {
   setup() {
-    return {
-      o_nama: `Ova stranica je namjenjena za login korisnika.`,
+    const credentials = ref({
+      username: '',
+      password: '',
+    });
+
+    const handleLogin = () => {
+      console.log('Credentials:', credentials.value);
+      alert('Prijava uspješna!');
     };
+
+    return { credentials, handleLogin };
   },
 };
 </script>
-
-<style lang="sass" scoped>
-.my-card
-  width: 100%
-</style>
