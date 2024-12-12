@@ -7,10 +7,10 @@ const routes = [
       { path: 'Login', component: () => import('pages/LoginPage.vue') },
       { path: 'Lokacija', component: () => import('pages/LokacijaPage.vue') },
       { path: 'Mapa', component: () => import('pages/MapaPage.vue') },
-      { path: 'Onama', component: () => import('pages/OnamaPage.vue') },
-      { path: 'PopisKnjiga', component: () => import('pages/PopisKnjigaPage.vue') },
+      { path: 'O_nama', component: () => import('pages/OnamaPage.vue') },
+      { path: 'Popis_Knjiga', component: () => import('pages/PopisKnjigaPage.vue') },
       { path: 'Registracija', component: () => import('pages/RegistracijaPage.vue') },
-      { path: 'Trazi knjigu', component: () => import('pages/TraziKnjiguPage.vue') },
+      { path: 'Trazi_Knjigu', component: () => import('pages/TraziKnjiguPage.vue') },
     ]
   },
 

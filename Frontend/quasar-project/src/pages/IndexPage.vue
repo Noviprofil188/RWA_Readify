@@ -1,9 +1,10 @@
 <template>
   <q-page class="flex flex-center">
     <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
+      alt="Fotografija polica knjiga u knjižnici."
+      src="~assets/skolska_knjiznica.jpg"
+      style="width: 850px; height: 600px"
+      :fit="mode"
     >
   </q-page>
 </template>

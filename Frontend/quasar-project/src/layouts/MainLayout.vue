@@ -94,7 +94,7 @@ const linksList = [
     title: 'Traži knjigu',
     caption: 'Pretraži knjigu',
     icon: 'search',
-    link: '#/trazi_knjigu'
+    link: '#/TraziKnjigu'
   }
 ]
 
