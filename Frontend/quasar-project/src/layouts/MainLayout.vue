@@ -55,28 +55,22 @@ defineOptions({
 
 const linksList = [
   {
+    title: 'Početna',
+    caption: '',
+    icon: 'home',
+    link: '#/home'
+  },
+  {
     title: 'Login',
-    caption: 'Stranica za log in',
+    caption: 'Log in - postojeći korisnici',
     icon: 'login',
     link: '#/login'
   },
   {
-    title: 'Lokacija',
-    caption: 'Lokacija',
-    icon: 'location_on',
-    link: '#/lokacija'
-  },
-  {
-    title: 'Mapa',
-    caption: 'Mapa knjiga',
-    icon: 'map',
-    link: '#/mapa'
-  },
-  {
-    title: 'Onama',
-    caption: 'O nama',
-    icon: 'diversity_3',
-    link: '#/o_nama'
+    title: 'Registracija',
+    caption: 'Registracija - novi korisnici',
+    icon: 'person',
+    link: '#/registracija'
   },
   {
     title: 'Popis knjiga',
@@ -85,16 +79,16 @@ const linksList = [
     link: '#/popis_knjiga'
   },
   {
-    title: 'Registracija',
-    caption: 'Registracija',
-    icon: 'person',
-    link: '#/registracija'
+    title: 'Onama',
+    caption: 'O nama',
+    icon: 'diversity_3',
+    link: '#/o_nama'
   },
   {
-    title: 'Traži knjigu',
-    caption: 'Pretraži knjigu',
-    icon: 'search',
-    link: '#/TraziKnjigu'
+    title: 'Lokacija',
+    caption: 'Lokacija',
+    icon: 'location_on',
+    link: '#/lokacija'
   }
 ]
 

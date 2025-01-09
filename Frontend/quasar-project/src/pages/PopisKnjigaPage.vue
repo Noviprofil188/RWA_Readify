@@ -51,10 +51,10 @@ import { ref } from 'vue';
 export default {
   setup() {
     const columns = [
-      { name: 'id', label: 'ID', field: 'id', align: 'left', headerStyle: { fontSize: '24px' }, style: { fontSize: '18px' } },
-      { name: 'naslov', label: 'Naslov', field: 'naslov', align: 'left', headerStyle: { fontSize: '24px' }, style: { fontSize: '18px' } },
-      { name: 'autor', label: 'Autor', field: 'autor', align: 'left', headerStyle: { fontSize: '24px' }, style: { fontSize: '18px' } },
-      { name: 'stanje', label: 'Stanje', field: 'stanje', align: 'center', headerStyle: { fontSize: '24px' }, style: { fontSize: '18px' } },
+      { name: 'id', label: 'ID', field: 'id', align: 'left', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
+      { name: 'naslov', label: 'Naslov', field: 'naslov', align: 'left', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
+      { name: 'autor', label: 'Autor', field: 'autor', align: 'left', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
+      { name: 'stanje', label: 'Stanje', field: 'stanje', align: 'center', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
     ];
 
     const rows = ref([

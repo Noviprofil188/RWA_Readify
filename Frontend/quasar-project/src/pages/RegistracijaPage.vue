@@ -4,8 +4,8 @@
     <q-form class="q-gutter-md" @submit="handleSubmit">
       <q-input filled v-model="user.name" label="Ime" />
       <q-input filled v-model="user.surname" label="Prezime" />
-      <q-input filled v-model="user.email" label="Email" type="email" />
       <q-input filled v-model="user.username" label="Korisničko ime" />
+      <q-input filled v-model="user.email" label="Email" type="email" />
       <q-input filled v-model="user.password" label="Lozinka" type="password" />
       <q-btn type="submit" color="primary" label="Potvrdi" />
     </q-form>

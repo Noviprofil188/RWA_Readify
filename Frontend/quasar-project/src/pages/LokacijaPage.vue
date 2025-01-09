@@ -15,7 +15,7 @@ export default {
 
     onMounted(() => {
       // Kreiranje karte na elementu s ID-jem 'map'
-      initialMap.value = L.map('map').setView([45.3312, 14.4322], 13);
+      initialMap.value = L.map('map').setView([45.3381, 14.42480], 17);
 
       // Dodavanje tile layer-a (ploča) na kartu
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
