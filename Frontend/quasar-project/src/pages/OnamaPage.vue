@@ -1,11 +1,14 @@
 <template>
   <q-page padding>
+    <!-- content -->
     <q-card dark bordered class="bg-grey-9 my-card">
       <q-card-section>
-        <div class="text-h6 text-weight-bold">
-          O nama:
-        </div>
-        <p class="q-mt-sm text-body1" v-text="o_nama"></p>
+        <q-img src="https://www.rijeka.hr/wp-content/uploads/2023/12/Nova-knji%C5%BEnica-4-901x600.jpg">
+          <div class="text-h3 text-weight-bolder absolute-bottom text-center">O nama</div>
+        </q-img>
+      </q-card-section>
+      <q-card-section class="text-h5 text-justify">
+        {{ o_nama }}
       </q-card-section>
     </q-card>
   </q-page>
