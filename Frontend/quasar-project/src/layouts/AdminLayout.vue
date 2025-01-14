@@ -50,45 +50,45 @@ import { ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
 
 defineOptions({
-  name: 'MainLayout'
+  name: 'AdminLayout'
 })
 
 const linksList = [
   {
     title: 'Početna',
-    caption: '',
+    caption: 'Početna stranica',
     icon: 'home',
-    link: '#/pocetna'
-  },
-  {
-    title: 'Login',
-    caption: 'Log in - postojeći korisnici',
-    icon: 'login',
-    link: '#/login'
-  },
-  {
-    title: 'Registracija',
-    caption: 'Registracija - novi korisnici',
-    icon: 'person',
-    link: '#/registracija'
+    link: '#/admin/'
   },
   {
     title: 'Popis knjiga',
     caption: 'Popis svih knjiga',
     icon: 'book',
-    link: '#/popis_knjiga'
+    link: '#/admin/popis_knjiga'
   },
   {
-    title: 'Onama',
-    caption: 'O nama',
-    icon: 'diversity_3',
-    link: '#/o_nama'
+    title: 'Pretraživanje',
+    caption: 'Traži knjigu',
+    icon: 'book',
+    link: '#/admin/pretrazivanje'
   },
   {
-    title: 'Lokacija',
-    caption: 'Lokacija',
-    icon: 'location_on',
-    link: '#/lokacija'
+    title: 'Popis korisnika',
+    caption: 'Popis svih korisnika',
+    icon: 'local_library',
+    link: '#/admin/pregled_korisnika'
+  },
+  {
+    title: 'Unos knjiga',
+    caption: 'Unos knjiga',
+    icon: 'local_library',
+    link: '#/admin/unos_knjiga'
+  },
+  {
+    title: 'Logout',
+    caption: 'Odjava',
+    icon: 'person',
+    link: '#/'
   }
 ]
 
