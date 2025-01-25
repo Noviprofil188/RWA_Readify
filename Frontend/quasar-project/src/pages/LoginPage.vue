@@ -1,9 +1,9 @@
 <template>
   <q-page class="q-pa-md flex justify-center items-center">
     <div class="form-container">
-      <h1 class="text-center">Prijava</h1>
+      <h3 class="text-center">Prijava</h3>
       <p class="text-center">Unesite svoje korisničke podatke za prijavu.</p>
- 
+
       <!-- Korisničko ime ili Email -->
       <q-input
         v-model="username"
@@ -15,7 +15,7 @@
         lazy-rules
         class="q-mb-md"
       />
- 
+
       <!-- Lozinka -->
       <q-input
         v-model="password"
@@ -25,7 +25,7 @@
         lazy-rules
         class="q-mb-md"
       />
- 
+
       <!-- Potvrdi -->
       <q-btn
         label="Potvrdi"
@@ -33,7 +33,7 @@
         @click="loginUser"
         class="full-width-btn"
       />
- 
+
       <!-- Poruka o uspjehu -->
       <div v-if="loginSuccess" class="text-center text-green-500 mt-4">
         Prijava uspješna!
@@ -44,14 +44,14 @@
 
 <script>
 import axios from "axios";
- 
+
 export default {
   data() {
     return {
       username: "",
       password: "",
       loginSuccess: false, // Za prikazivanje poruke o uspjehu
-      user: JSON.parse(localStorage.getItem("user")) || null, //Dodano za prikaz korisničkog nadimka
+      user: JSON.parse(localStorage.getItem("user")) || null, // Dodano za prikaz korisničkog nadimka
     };
   },
   computed: {
@@ -63,46 +63,65 @@ export default {
     },
   },
   methods: {
-    async loginUser() {
-      if (this.username && this.password) {
-        const loginData = {
-          username: this.username,
-          password: this.password,
-        };
- 
-        try {
-          const response = await axios.post(
-            "http://localhost:3000/api/login",
-            loginData,
-            {
-              headers: { "Content-Type": "application/json" },
-            }
-          );
- 
-          console.log("Prijava uspješna:", response.data);
- 
-          if (response.data.user) {
-            const user = response.data.user;
-            localStorage.setItem("user", JSON.stringify(user));
-            this.user = user; //Dodano - sprema korisnika za prikaz nadimka
- 
-            this.$router.push(user.role === "admin" ? "/pocetna" : "/O_nama");
-          } else {
-            alert("Neispravni podaci za prijavu!");
+  async loginUser() {
+    if (this.username && this.password) {
+      const loginData = {
+        username: this.username,
+        password: this.password,
+      };
+
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/login",
+          loginData,
+          {
+            headers: { "Content-Type": "application/json" },
           }
-        } catch (error) {
-          console.error("Greška pri prijavi:", error);
-          alert(error.response?.data?.message || "Greška na serveru.");
+        );
+
+        console.log("Prijava uspješna:", response.data);
+
+        if (response.data.success) {
+          const user = response.data.user;
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("role", user.role);  // Spremi role u localStorage
+          this.user = user; // Dodano - sprema korisnika za prikaz nadimka
+          this.loginSuccess = true;
+
+          // Preusmjeravanje na odgovarajuću stranicu
+          if (user.role === "admin") {
+            this.$router.push("/admin");  // Preusmjeri admina na /admin
+          } else {
+            this.$router.push("/o_nama");  // Preusmjeri običnog korisnika na /o_nama
+          }
+        } else {
+          alert("Neispravni podaci za prijavu!");
         }
-      } else {
-        alert("Molimo unesite korisničko ime i lozinku.");
+      } catch (error) {
+        console.error("Greška pri prijavi:", error);
+        alert(error.response?.data?.message || "Greška na serveru.");
       }
-    },
-    logoutUser() {
-      localStorage.removeItem("user");
-      this.user = null;
-      this.$router.push("/login");
-    },
+    } else {
+      alert("Molimo unesite korisničko ime i lozinku.");
+    }
   },
+  logoutUser() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");  // Ukloni role prilikom odjave
+    this.user = null;
+    this.$router.push("/login");
+  },
+},
 };
 </script>
+
+<style scoped>
+.form-container {
+  max-width: 400px;
+  width: 100%;
+}
+
+.full-width-btn {
+  width: 100%;
+}
+</style>

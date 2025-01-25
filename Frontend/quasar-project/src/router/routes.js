@@ -14,24 +14,23 @@ const routes = [
   },
 
   // Admin stranica s provjerom pristupa
-  {
-    path: '/admin',
-    component: () => import('pages/AdminLayout.vue'),
-    beforeEnter: (to, from, next) => {
-      const role = localStorage.getItem('role')  // Provjera pohranjenog role iz localStorage
-      if (role === 'admin') {
-        next()  // Ako je korisnik admin, dopuštamo pristup admin stranici
-      } else {
-        next('/')  // Ako nije admin, preusmjeravanje na početnu stranicu
-      }
-    }
-  },
+    {
+      path: '/admin',
+      component: () => import('layouts/AdminLayout.vue'), // Koristi AdminLayout
+      children: [
+        { path: '', component: () => import('pages/AdminPage.vue') }, // Glavna admin stranica
+        { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') }, // Ostale rute
+        { path: 'pretrazivanje', component: () => import('pages/PretrazivanjePage.vue') },
+        { path: 'pregled_korisnika', component: () => import('pages/PregledKorisnikaPage.vue') },
+        { path: 'unos_knjiga', component: () => import('pages/UnosKnjigaPage.vue') },
+      ],
+    },
 
   // Ako korisnik pokušava pristupiti nepostojećoj stranici
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')  // Stranica koja se prikazuje za 404 greške
   }
-]
+];
 
 export default routes;

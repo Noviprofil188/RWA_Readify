@@ -1,107 +1,121 @@
 <template>
-  <q-page padding>
-    <!-- Naslov i opis -->
-    <h1 class="text-h4 text-bold text-center">Popis knjiga</h1>
-    <p class="text-subtitle1 text-center">
-      Ovdje možete pronaći popis svih knjiga koje su dostupne u našoj knjižnici.
-    </p>
+  <div class="q-pa-md">
+    <!-- Polje za pretragu s autocomplete -->
+    <q-select
+      v-model="selectedBook"
+      :options="filteredOptions"
+      @filter="filterBooks"
+      use-input
+      input-debounce="0"
+      label="Traži knjigu"
+      outlined
+      clearable
+      class="q-mb-md"
+    >
+      <template v-slot:no-option>
+        <q-item>
+          <q-item-section class="text-grey">Nema rezultata</q-item-section>
+        </q-item>
+      </template>
+    </q-select>
 
-    <!-- Tražilica -->
-    <div class="q-my-md q-gutter-md">
-      <q-input filled v-model="searchQuery" label="Unesite pojam za pretraživanje" />
-      <q-checkbox v-model="searchByAuthor" label="Pretraži po autoru" />
-      <q-checkbox v-model="searchByTitle" label="Pretraži po naslovu" />
-      <q-btn color="primary" label="Traži" @click="searchBooks" />
+    <!-- Checkboxovi za filtere -->
+    <div class="q-gutter-sm q-mb-md">
+      <q-checkbox v-model="filters.naslov" label="Naziv knjige" />
+      <q-checkbox v-model="filters.autor" label="Autor" />
+      <q-checkbox v-model="filters.godina" label="Godina izdanja" />
+      <q-checkbox v-model="filters.zanr" label="Žanr" />
     </div>
 
-    <!-- Tablica za rezultate pretrage -->
-    <q-table
-      v-if="filteredRows.length"
-      separator="horizontal"
-      title="Rezultati pretrage"
-      :rows="filteredRows"
-      :columns="columns"
-      row-key="id"
-    ></q-table>
-
-    <!-- Tablica svih knjiga -->
-    <div class="q-pa-md" v-else>
-      <q-table
-        separator="horizontal"
-        title="Popis svih knjiga"
-        title-class="text-h4 text-bold text-red-9"
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        table-class="text-black"
-        table-style="border: 3px solid black;"
-        table-header-style="height: 65px"
-        table-header-class="bg-red-2"
-        bordered
-        flat
-        square
-      ></q-table>
-    </div>
-  </q-page>
+    <!-- Prikaz svih knjiga -->
+    <q-list bordered separator>
+      <q-item v-for="knjiga in filtriraneKnjige" :key="knjiga.id">
+        <q-item-section>
+          <q-item-label>{{ knjiga.naslov }}</q-item-label>
+          <q-item-label caption>Autor: {{ knjiga.autor }}</q-item-label>
+          <q-item-label caption>Godina izdanja: {{ knjiga.godina_izdanja }}</q-item-label>
+          <q-item-label caption>Žanr: {{ knjiga.zanr }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-
 export default {
-  setup() {
-    const columns = [
-      { name: 'id', label: 'ID', field: 'id', align: 'left', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
-      { name: 'naslov', label: 'Naslov', field: 'naslov', align: 'left', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
-      { name: 'autor', label: 'Autor', field: 'autor', align: 'left', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
-      { name: 'stanje', label: 'Stanje', field: 'stanje', align: 'center', headerStyle: { fontSize: '22px' }, style: { fontSize: '16px' } },
-    ];
+  data() {
+    return {
+      selectedBook: null, // Odabrana knjiga iz autocomplete-a
+      searchQuery: "", // Upit za pretragu
+      filters: {
+        naslov: true, // Filter za naziv knjige
+        autor: false, // Filter za autora
+        godina: false, // Filter za godinu izdanja
+        zanr: false, // Filter za žanr
+      },
+      knjige: [
+        // Primjer podataka (možete ih zamijeniti podacima iz baze)
+        { id: 1, naslov: "1984", autor: "George Orwell", godina_izdanja: 1949, zanr: "Dystopian" },
+        { id: 2, naslov: "Rat i mir", autor: "Leo Tolstoy", godina_izdanja: 1869, zanr: "Povijesni roman" },
+        { id: 3, naslov: "Uliks", autor: "James Joyce", godina_izdanja: 1922, zanr: "Modernistički roman" },
+        { id: 4, naslov: "Lolita", autor: "Vladimir Nabokov", godina_izdanja: 1955, zanr: "Psihološki roman" },
+        { id: 5, naslov: "Zločin i kazna", autor: "Fyodor Dostoevsky", godina_izdanja: 1866, zanr: "Psihološki roman" },
+        // Dodajte više knjiga prema potrebi
+      ],
+      filteredOptions: [], // Opcije za autocomplete
+    };
+  },
+  computed: {
+    // Filtriranje knjiga prema upitu i odabranim filterima
+    filtriraneKnjige() {
+      return this.knjige.filter((knjiga) => {
+        const query = this.searchQuery.toLowerCase();
 
-    const rows = ref([
-      { id: '1', naslov: 'Funny Story', autor: 'Emily Henry', stanje: '4' },
-      { id: '2', naslov: 'The Lord of the Rings', autor: 'J. R. R. Tolkien', stanje: '5' },
-      { id: '3', naslov: 'Harry Potter', autor: 'J.K. Rowling', stanje: '2' },
-      { id: '4', naslov: 'Diary of a Wimpy Kid', autor: 'Jeff Kinney', stanje: '2' },
-    ]);
+        // Provjeri je li upit prisutan u odabranim filterima
+        const matchesNaslov = this.filters.naslov && knjiga.naslov.toLowerCase().includes(query);
+        const matchesAutor = this.filters.autor && knjiga.autor.toLowerCase().includes(query);
+        const matchesGodina = this.filters.godina && knjiga.godina_izdanja.toString().includes(query);
+        const matchesZanr = this.filters.zanr && knjiga.zanr.toLowerCase().includes(query);
 
-    const searchQuery = ref('');
-    const searchByAuthor = ref(false);
-    const searchByTitle = ref(false);
-    const filteredRows = ref([]);
-
-    const searchBooks = () => {
-      if (!searchQuery.value.trim()) {
-        filteredRows.value = [];
+        // Ako je barem jedan filter odabran i upit se podudara, vrati knjigu
+        return matchesNaslov || matchesAutor || matchesGodina || matchesZanr;
+      });
+    },
+  },
+  methods: {
+    // Filtriranje opcija za autocomplete
+    filterBooks(val, update) {
+      if (val === "") {
+        update(() => {
+          this.filteredOptions = [];
+        });
         return;
       }
 
-      const query = searchQuery.value.toLowerCase();
-      filteredRows.value = rows.value.filter((book) => {
-        if (searchByAuthor.value && book.autor.toLowerCase().includes(query)) {
-          return true;
-        }
-        if (searchByTitle.value && book.naslov.toLowerCase().includes(query)) {
-          return true;
-        }
-        return false;
+      update(() => {
+        const needle = val.toLowerCase();
+        this.filteredOptions = this.knjige
+          .filter((knjiga) => knjiga.naslov.toLowerCase().startsWith(needle))
+          .map((knjiga) => ({
+            label: knjiga.naslov,
+            value: knjiga.id,
+          }));
       });
-    };
-
-    return {
-      columns,
-      rows,
-      searchQuery,
-      searchByAuthor,
-      searchByTitle,
-      filteredRows,
-      searchBooks,
-    };
+    },
+  },
+  watch: {
+    // Pratimo promjenu odabrane knjige iz autocomplete-a
+    selectedBook(newVal) {
+      if (newVal) {
+        this.searchQuery = newVal.label; // Postavi upit za pretragu na odabrani naslov
+      } else {
+        this.searchQuery = ""; // Resetiraj upit ako nema odabrane knjige
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-.text-center {
-  margin-bottom: 16px;
-}
+/* Dodatni stilovi po potrebi */
 </style>
