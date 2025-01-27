@@ -10,21 +10,24 @@ const routes = [
       { path: 'o_nama', component: () => import('pages/OnamaPage.vue') },  // O nama stranica
       { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') },  // Popis knjiga
       { path: 'registracija', component: () => import('pages/RegistracijaPage.vue') },  // Registracija stranica
+      { path: 'rezervacija', component: () => import('pages/RezervacijaPage.vue') }, //Rezervacija knjiga
     ]
   },
 
   // Admin stranica s provjerom pristupa
-    {
-      path: '/admin',
-      component: () => import('layouts/AdminLayout.vue'), // Koristi AdminLayout
-      children: [
-        { path: '', component: () => import('pages/AdminPage.vue') }, // Glavna admin stranica
-        { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') }, // Ostale rute
-        { path: 'pretrazivanje', component: () => import('pages/PretrazivanjePage.vue') },
-        { path: 'pregled_korisnika', component: () => import('pages/PregledKorisnikaPage.vue') },
-        { path: 'unos_knjiga', component: () => import('pages/UnosKnjigaPage.vue') },
-      ],
-    },
+  {
+    path: '/admin',
+    component: () => import('layouts/AdminLayout.vue'), // Koristi AdminLayout
+    meta: { requiresAuth: true, role: 'admin' }, // Provjera autentifikacije i uloge
+    children: [
+      { path: '', component: () => import('pages/AdminPage.vue') }, // Glavna admin stranica
+      { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') }, // Popis knjiga
+      { path: 'pretrazivanje', component: () => import('pages/PretrazivanjePage.vue') }, // Pretraživanje knjiga
+      { path: 'popis_korisnika', component: () => import('pages/PopisKorisnikaPage.vue') }, // Pregled korisnika
+      { path: 'unos_knjiga', component: () => import('pages/UnosKnjigaPage.vue') }, // Unos knjiga
+      { path: 'rezervacija', component: () => import('pages/RezervacijaPage.vue') }, //Rezervacija knjiga
+    ],
+  },
 
   // Ako korisnik pokušava pristupiti nepostojećoj stranici
   {

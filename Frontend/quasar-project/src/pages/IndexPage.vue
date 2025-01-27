@@ -4,7 +4,7 @@
 
       <!-- Naslov aplikacije -->
       <div class="text-h3 q-mb-md" style="text-align: center;">
-        Dobrodošli u knjižnicu knjiga!
+        Dobrodošli u knjižnicu Readify!
       </div>
 
       <!-- Kratki opis aplikacije -->

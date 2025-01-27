@@ -13,21 +13,35 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
     const user = ref({
-      name: '',
-      surname: '',
-      email: '',
-      username: '',
-      password: '',
+      name: "",
+      surname: "",
+      email: "",
+      username: "",
+      password: "",
     });
 
-    const handleSubmit = () => {
-      console.log('User data:', user.value);
-      alert('Registracija uspješna!');
+    const router = useRouter();
+
+    const handleSubmit = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/korisnici",
+          user.value
+        );
+        console.log("Registracija uspješna:", response.data);
+        alert("Registracija uspješna!");
+        router.push("/profil");
+      } catch (error) {
+        console.error("Greška pri registraciji:", error);
+        alert(error.response?.data?.message || "Greška na serveru.");
+      }
     };
 
     return { user, handleSubmit };

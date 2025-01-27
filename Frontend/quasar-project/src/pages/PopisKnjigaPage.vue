@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -53,15 +55,7 @@ export default {
         godina: false, // Filter za godinu izdanja
         zanr: false, // Filter za žanr
       },
-      knjige: [
-        // Primjer podataka (možete ih zamijeniti podacima iz baze)
-        { id: 1, naslov: "1984", autor: "George Orwell", godina_izdanja: 1949, zanr: "Dystopian" },
-        { id: 2, naslov: "Rat i mir", autor: "Leo Tolstoy", godina_izdanja: 1869, zanr: "Povijesni roman" },
-        { id: 3, naslov: "Uliks", autor: "James Joyce", godina_izdanja: 1922, zanr: "Modernistički roman" },
-        { id: 4, naslov: "Lolita", autor: "Vladimir Nabokov", godina_izdanja: 1955, zanr: "Psihološki roman" },
-        { id: 5, naslov: "Zločin i kazna", autor: "Fyodor Dostoevsky", godina_izdanja: 1866, zanr: "Psihološki roman" },
-        // Dodajte više knjiga prema potrebi
-      ],
+      knjige: [], // Knjige iz baze
       filteredOptions: [], // Opcije za autocomplete
     };
   },
@@ -83,6 +77,16 @@ export default {
     },
   },
   methods: {
+    // Dohvat svih knjiga iz baze
+    async fetchBooks() {
+      try {
+        const response = await axios.get("http://localhost:3000/api/knjige");
+        this.knjige = response.data;
+      } catch (error) {
+        console.error("Greška pri dohvaćanju knjiga:", error);
+      }
+    },
+
     // Filtriranje opcija za autocomplete
     filterBooks(val, update) {
       if (val === "") {
@@ -113,9 +117,30 @@ export default {
       }
     },
   },
+  mounted() {
+    this.fetchBooks(); // Dohvati knjige prilikom učitavanja stranice
+  },
 };
 </script>
 
 <style scoped>
-/* Dodatni stilovi po potrebi */
+.popis-knjiga {
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.custom-table {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table th {
+  background-color: #1976d2;
+  color: white;
+}
+
+.custom-table tr:hover {
+  background-color: #e3f2fd;
+}
 </style>

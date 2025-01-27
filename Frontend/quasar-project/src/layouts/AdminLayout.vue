@@ -47,6 +47,7 @@
           v-for="link in linksList"
           :key="link.title"
           v-bind="link"
+          @click="navigateTo(link.route)"
         />
       </q-list>
     </q-drawer>
@@ -63,13 +64,8 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import EssentialLink from 'components/EssentialLink.vue';
 
-// Stanje za otvoren/zatvoren izbornik
 const leftDrawerOpen = ref(false);
-
-// Podaci o prijavljenom korisniku
 const user = ref(null);
-
-// Router za navigaciju
 const router = useRouter();
 
 // Linkovi u izborniku
@@ -78,43 +74,53 @@ const linksList = [
     title: 'Početna',
     caption: 'Početna stranica',
     icon: 'home',
-    link: '/admin',
+    route: '/admin',
   },
   {
     title: 'Popis knjiga',
     caption: 'Popis svih knjiga',
     icon: 'menu_book',
-    link: '/admin/popis_knjiga',
-  },
-  {
-    title: 'Pretraživanje',
-    caption: 'Traži knjigu',
-    icon: 'search',
-    link: '/admin/pretrazivanje',
+    route: '/admin/popis_knjiga',
   },
   {
     title: 'Popis korisnika',
     caption: 'Popis svih korisnika',
     icon: 'people',
-    link: '/admin/pregled_korisnika',
+    route: '/admin/popis_korisnika',
   },
   {
     title: 'Unos knjiga',
     caption: 'Unos novih knjiga',
     icon: 'add',
-    link: '/admin/unos_knjiga',
+    route: '/admin/unos_knjiga',
+  },
+  {
+    title: 'Rezervacija knjiga',
+    caption: 'Rezerviraj knjige',
+    icon: 'book',
+    route: '/admin/rezervacija',
   },
   {
     title: 'Odjava',
     caption: 'Odjavi se iz sustava',
     icon: 'logout',
-    link: '/login',
+    route: '/login',
   },
+
 ];
 
 // Funkcija za otvaranje/sklapanje izbornika
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+// Funkcija za navigaciju
+function navigateTo(route) {
+  if (route === '/login') {
+    logout();
+  } else {
+    router.push(route);
+  }
 }
 
 // Funkcija za odjavu
@@ -136,22 +142,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Stilovi za header */
-.q-header {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Stilovi za izbornik */
-.q-drawer {
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Stilovi za linkove u izborniku */
-.q-item {
-  transition: background-color 0.3s;
-}
-
-.q-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
+/* Stilovi po potrebi */
 </style>
