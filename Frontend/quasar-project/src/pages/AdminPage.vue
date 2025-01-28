@@ -77,7 +77,7 @@ export default {
 
     // Navigacija na popis knjiga
     goToPopisKnjiga() {
-      this.$router.push("/admin/popis_knjiga");
+      this.$router.push("/admin/popis_knjiga_admin");
     },
 
     // Navigacija na rezervacije

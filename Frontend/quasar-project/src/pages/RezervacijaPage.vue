@@ -82,7 +82,6 @@ export default {
         console.log("Dohvaćene rezervacije:", this.rezervacije);
       } catch (error) {
         console.error("Greška pri dohvaćanju rezervacija:", error);
-        this.$q.notify({ type: "negative", message: "Greška pri dohvaćanju rezervacija." });
       } finally {
         this.loading = false;
       }
@@ -95,7 +94,6 @@ export default {
         this.korisnici = response.data;
       } catch (error) {
         console.error("Greška pri dohvaćanju korisnika:", error);
-        this.$q.notify({ type: "negative", message: "Greška pri dohvaćanju korisnika." });
       }
     },
 
@@ -106,7 +104,6 @@ export default {
         this.knjige = response.data;
       } catch (error) {
         console.error("Greška pri dohvaćanju knjiga:", error);
-        this.$q.notify({ type: "negative", message: "Greška pri dohvaćanju knjiga." });
       }
     },
 
@@ -116,16 +113,16 @@ export default {
     },
 
     async dodajRezervaciju() {
-      if (!this.novaRezervacija.korisnik || !this.novaRezervacija.knjiga || !this.novaRezervacija.datum_rezervacije) {
-        this.$q.notify({ type: "negative", message: "Sva polja su obavezna." });
+      if (!this.novaRezervacija.korisnik || !this.novaRezervacija.knjiga || !this.novaRezervacija.datum_rez) {
+        alert("Sva polja su obavezna.");
         return;
       }
 
       try {
         const response = await axios.post("http://localhost:3000/api/rezervacija", {
-          username: this.novaRezervacija.korisnik,
-          knjiga: this.novaRezervacija.knjiga,
-          datum_rez: this.novaRezervacija.datum_rezervacije,
+          korisnik: this.novaRezervacija.korisnik, // Provjerite da li server očekuje korisnik_id ili username
+          knjiga: this.novaRezervacija.knjiga, // Provjerite da li server očekuje knjiga_id ili knjiga
+          datum_rez: this.novaRezervacija.datum_rez, // Provjerite format datuma
         });
 
         this.rezervacije.push(response.data);
@@ -133,12 +130,12 @@ export default {
         // Resetiranje forme
         this.novaRezervacija.korisnik = null;
         this.novaRezervacija.knjiga = null;
-        this.novaRezervacija.datum_rezervacije = "";
+        this.novaRezervacija.datum_rez = "";
 
-        this.$q.notify({ type: "positive", message: "Rezervacija uspješno dodana!" });
+        alert("Rezervacija uspješno dodana.");
       } catch (error) {
         console.error("Greška pri dodavanju rezervacije:", error);
-        this.$q.notify({ type: "negative", message: "Greška pri dodavanju rezervacije." });
+        alert("Došlo je do greške pri dodavanju rezervacije. Provjerite podatke i pokušajte ponovno.");
       }
     },
 
@@ -146,14 +143,13 @@ export default {
       try {
         await axios.delete(`http://localhost:3000/api/rezervacija/${id}`);
         this.rezervacije = this.rezervacije.filter((rez) => rez.id !== id);
-        this.$q.notify({ type: "positive", message: "Rezervacija uspješno obrisana!" });
+        alert("Rezervacija uspješno obrisana.");
       } catch (error) {
         console.error("Greška pri brisanju rezervacije:", error);
-        this.$q.notify({ type: "negative", message: "Greška pri brisanju rezervacije." });
+        alert("Došlo je do greške pri brisanju rezervacije.");
       }
     },
   },
-
 };
 </script>
 

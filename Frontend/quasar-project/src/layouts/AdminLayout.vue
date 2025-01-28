@@ -140,7 +140,3 @@ onMounted(() => {
   }
 });
 </script>
-
-<style scoped>
-/* Stilovi po potrebi */
-</style>

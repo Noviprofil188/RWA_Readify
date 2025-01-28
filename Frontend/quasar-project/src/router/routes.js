@@ -1,4 +1,3 @@
-
 const routes = [
   {
     path: '/',
@@ -26,7 +25,7 @@ const routes = [
     meta: { requiresAuth: true, role: 'admin' }, // Provjera autentifikacije i uloge
     children: [
       { path: '', component: () => import('pages/AdminPage.vue') }, // Glavna admin stranica
-      { path: 'popis_knjiga_admin', component: () => import('pages/popis_knjigaPage.vue') }, // Popis knjiga
+      { path: 'popis_knjiga_admin', component: () => import('src/pages/popis_knjiga_adminPage.vue') }, // Popis knjiga
       { path: 'pretrazivanje', component: () => import('pages/PretrazivanjePage.vue') }, // Pretraživanje knjiga
       { path: 'popis_korisnika', component: () => import('pages/PopisKorisnikaPage.vue') }, // Pregled korisnika
       { path: 'unos_knjiga', component: () => import('pages/UnosKnjigaPage.vue') }, // Unos knjiga
@@ -34,16 +33,15 @@ const routes = [
     ],
   },
 
-
   // Profil stranica s provjerom pristupa
   {
     path: '/profil',
-    component: () => import('layouts/ProfilLayout.vue'), // Koristi ProfilLayout
-    meta: { requiresAuth: true, role: 'korisnik' }, // Provjera autentifikacije i uloge
+    component: () => import('layouts/ProfilLayout.vue'),
+    meta: { requiresAuth: true, role: 'korisnik' },
     children: [
-      { path: '', component: () => import('pages/ProfilPage.vue') }, // Glavna profil stranica
-      { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') }, // Popis knjiga
-      { path: 'rezervacija', component: () => import('pages/RezervacijaPage.vue') }, // Rezervacije
+      { path: '', component: () => import('pages/ProfilPage.vue') },
+      { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') },
+      { path: 'rezervacija', component: () => import('pages/RezervacijaPage.vue') },
     ],
   },
 
@@ -53,6 +51,5 @@ const routes = [
     component: () => import('pages/ErrorNotFound.vue')  // Stranica koja se prikazuje za 404 greške
   }
 ];
-
 
 export default routes;
