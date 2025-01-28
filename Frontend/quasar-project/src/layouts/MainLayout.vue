@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Knjiznica projekt
+          Readify
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>

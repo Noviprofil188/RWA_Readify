@@ -1,17 +1,8 @@
 <template>
   <div class="q-pa-md">
     <!-- Polje za pretragu s autocomplete -->
-    <q-select
-      v-model="selectedBook"
-      :options="filteredOptions"
-      @filter="filterBooks"
-      use-input
-      input-debounce="0"
-      label="Traži knjigu"
-      outlined
-      clearable
-      class="q-mb-md"
-    >
+    <q-select v-model="selectedBook" :options="filteredOptions" @filter="filterBooks" use-input input-debounce="0"
+      label="Traži knjigu" outlined clearable class="q-mb-md">
       <template v-slot:no-option>
         <q-item>
           <q-item-section class="text-grey">Nema rezultata</q-item-section>
@@ -36,6 +27,16 @@
           <q-item-label caption>Godina izdanja: {{ knjiga.godina_izdanja }}</q-item-label>
           <q-item-label caption>Žanr: {{ knjiga.zanr }}</q-item-label>
         </q-item-section>
+
+        <!-- Gumb za dodavanje u favorite -->
+        <q-item-section side>
+          <q-btn color="positive" icon="favorite" @click="addToFavorites(knjiga.id)" label="Dodaj u favorite" dense />
+        </q-item-section>
+
+        <!-- Gumb za brisanje knjige -->
+        <q-item-section side>
+          <q-btn color="negative" icon="delete" @click="deleteBook(knjiga.id)" label="Izbriši" dense />
+        </q-item-section>
       </q-item>
     </q-list>
   </div>
@@ -43,8 +44,22 @@
 
 <script>
 import axios from "axios";
+import { useQuasar } from 'quasar';
 
 export default {
+  setup() {
+    const $q = useQuasar();
+
+    return {
+      showNotify() {
+        $q.notify({
+          message: 'Knjiga uspješno dodana u favorite!',
+          color: 'positive',
+          icon: 'check',
+        });
+      },
+    };
+  },
   data() {
     return {
       selectedBook: null, // Odabrana knjiga iz autocomplete-a
@@ -106,6 +121,44 @@ export default {
           }));
       });
     },
+
+    // Brisanje knjige
+    async deleteBook(bookId) {
+      try {
+        const confirmDelete = confirm("Jeste li sigurni da želite izbrisati ovu knjigu?");
+        if (!confirmDelete) return;
+
+        await axios.delete(`http://localhost:3000/api/knjige/${bookId}`);
+        this.knjige = this.knjige.filter((knjiga) => knjiga.id !== bookId); // Ukloni knjigu iz liste
+        alert("Knjiga uspješno izbrisana!");
+      } catch (error) {
+        console.error("Greška pri brisanju knjige:", error);
+        alert("Greška pri brisanju knjige.");
+      }
+    },
+
+    // Dodavanje knjige u favorite
+    async addToFavorites(bookId) {
+      try {
+        // Provjeri je li korisnik prijavljen
+        if (!this.$store.state.user || !this.$store.state.user.id) {
+          alert("Morate biti prijavljeni da biste dodali knjigu u favorite.");
+          return;
+        }
+
+        const response = await axios.post("http://localhost:3000/api/favoriti", {
+          korisnik_id: this.$store.state.user.id,
+          knjiga_id: bookId,
+        });
+
+        if (response.status === 201) {
+          this.showNotify(); // Prikaži obavijest
+        }
+      } catch (error) {
+        console.error("Greška pri dodavanju u favorite:", error);
+        alert("Greška pri dodavanju u favorite.");
+      }
+    },
   },
   watch: {
     // Pratimo promjenu odabrane knjige iz autocomplete-a
@@ -142,5 +195,9 @@ export default {
 
 .custom-table tr:hover {
   background-color: #e3f2fd;
+}
+
+.q-btn--positive {
+  margin-right: 8px;
 }
 </style>

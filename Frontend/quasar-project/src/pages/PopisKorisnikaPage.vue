@@ -3,24 +3,14 @@
     <h1 class="text-h4 q-mb-md">Popis korisnika</h1>
 
     <!-- Tablica za prikaz korisnika -->
-    <q-table
-      :rows="users"
-      :columns="columns"
-      row-key="id"
-      :loading="loading"
-      :pagination="pagination"
-      no-data-label="Nema korisnika za prikaz."
-    >
-      <!-- Opcije za pretraživanje i filtriranje -->
-      <template v-slot:top>
-        <q-input
-          v-model="searchQuery"
-          outlined
-          dense
-          placeholder="Pretraži korisnike..."
-          class="q-mb-md"
-          @input="fetchUsers"
-        />
+    <q-table :rows="users" :columns="columns" row-key="id" :loading="loading" :pagination="pagination"
+      no-data-label="Nema korisnika za prikaz.">
+      
+      <!-- Dodajemo gumb za brisanje u svakom retku -->
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn color="negative" icon="delete" @click="deleteUser(props.row.id)" />
+        </q-td>
       </template>
     </q-table>
   </q-page>
@@ -34,12 +24,14 @@ export default {
     return {
       users: [], // Podaci o korisnicima
       loading: false, // Učitavanje podataka
-      searchQuery: "", // Upit za pretraživanje
       columns: [
         { name: "id", label: "ID", field: "id", align: "left", sortable: true },
+        { name: "ime", label: "Ime", field: "ime", align: "left", sortable: true },
+        { name: "prezime", label: "Prezime", field: "prezime", align: "left", sortable: true },
         { name: "username", label: "Korisničko ime", field: "username", align: "left", sortable: true },
         { name: "email", label: "Email", field: "email", align: "left", sortable: true },
-        { name: "uloga", label: "Uloga", field: "uloga", align: "left", sortable: true }, // Promijenjeno iz "role" u "uloga"
+        { name: "uloga", label: "Uloga", field: "uloga", align: "left", sortable: true },
+        { name: "actions", label: "Akcije", field: "actions", align: "center" }, // Dodajemo stupac za akcije
       ],
       pagination: {
         rowsPerPage: 10, // Broj redova po stranici
@@ -51,11 +43,7 @@ export default {
     async fetchUsers() {
       this.loading = true;
       try {
-        const response = await axios.get("http://localhost:3000/api/korisnici", {
-          params: {
-            search: this.searchQuery, // Proslijedi upit za pretraživanje
-          },
-        });
+        const response = await axios.get("http://localhost:3000/api/korisnici");
         console.log("Odgovor od servera:", response.data); // Log za provjeru
         this.users = response.data;
       } catch (error) {
@@ -66,6 +54,24 @@ export default {
         });
       } finally {
         this.loading = false;
+      }
+    },
+
+    // Brisanje korisnika
+    async deleteUser(userId) {
+      try {
+        await axios.delete(`http://localhost:3000/api/korisnici/${userId}`);
+        this.$q.notify({
+          type: "positive",
+          message: "Korisnik je uspješno obrisan.",
+        });
+        this.fetchUsers(); // Ponovno dohvaćanje korisnika nakon brisanja
+      } catch (error) {
+        console.error("Greška pri brisanju korisnika:", error);
+        this.$q.notify({
+          type: "negative",
+          message: "Greška pri brisanju korisnika.",
+        });
       }
     },
 

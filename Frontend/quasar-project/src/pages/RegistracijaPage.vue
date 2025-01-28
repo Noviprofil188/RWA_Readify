@@ -22,8 +22,8 @@ export default {
     const user = ref({
       name: "",
       surname: "",
-      email: "",
       username: "",
+      email: "",
       password: "",
     });
 
@@ -33,11 +33,17 @@ export default {
       try {
         const response = await axios.post(
           "http://localhost:3000/api/korisnici",
-          user.value
+          {
+            ime: user.value.name,
+            prezime: user.value.surname,
+            username: user.value.username,
+            email: user.value.email,
+            lozinka: user.value.password,
+          }
         );
         console.log("Registracija uspješna:", response.data);
         alert("Registracija uspješna!");
-        router.push("/profil");
+        router.push("/popis_knjiga"); // Ovo treba preusmjeriti na stranicu profila
       } catch (error) {
         console.error("Greška pri registraciji:", error);
         alert(error.response?.data?.message || "Greška na serveru.");

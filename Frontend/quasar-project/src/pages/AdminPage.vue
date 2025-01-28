@@ -55,6 +55,7 @@ export default {
     };
   },
   methods: {
+
     // Dohvati broj knjiga, rezervacija, korisnika i aktivnih rezervacija
     async fetchCounts() {
       try {
@@ -81,7 +82,7 @@ export default {
 
     // Navigacija na rezervacije
     goToRezervacije() {
-      this.$router.push("/admin/rezervacije");
+      this.$router.push("/admin/rezervacija");
     },
 
     // Navigacija na popis korisnika
@@ -91,9 +92,10 @@ export default {
 
     // Navigacija na aktivne rezervacije
     goToAktivneRezervacije() {
-      this.$router.push("/admin/aktivne_rezervacije");
+      this.$router.push("/admin/rezervacija");
     },
   },
+
   mounted() {
     this.fetchCounts(); // Dohvati podatke prilikom učitavanja stranice
   },

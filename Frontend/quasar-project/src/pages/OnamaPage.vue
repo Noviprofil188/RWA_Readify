@@ -18,12 +18,10 @@
 export default {
   setup() {
     return {
-      o_nama: `Gradska knjižnica Rijeka središnja je narodna knjižnica grada 
-      Rijeke i matična knjižnica za narodne i školske knjižnice Primorsko-
-      goranske županije. Ona je informacijsko, obrazovno, kulturno, 
-      komunikacijsko i socijalno središte Rijeke i okolice usmjereno prema novom 
-      stvaralaštvu, održivom razvoju i kvaliteti razvoja zajednice i čitateljske 
-      kulture.`,
+      o_nama: `Online knjižnica Readify omogućuje pretraživanje po nazivu, žarnu, 
+      godini izadanja knjige, odaberite svoju najdražu. Ona je informacijsko, obrazovno, kulturno, 
+      komunikacijsko i socijalno središte usmjereno prema novom stvaralaštvu, 
+      održivom razvoju i kvaliteti razvoja zajednice i čitateljske kulture.`,
     };
   },
 };
@@ -32,4 +30,5 @@ export default {
 <style lang="sass" scoped>
 .my-card
   width: 100%
+
 </style>

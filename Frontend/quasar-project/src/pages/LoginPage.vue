@@ -82,11 +82,11 @@ export default {
             this.user = user; // Dodano - sprema korisnika za prikaz nadimka
             this.loginSuccess = true;
 
-            // Preusmjeravanje na odgovarajuću stranicu
+            // Preusmjeravanje na odgovarajuću stranicu ovisno o ulozi
             if (user.role === "admin") {
               this.$router.push("/admin"); // Preusmjeri admina na /admin
             } else {
-              this.$router.push("/o_nama"); // Preusmjeri običnog korisnika na /o_nama
+              this.$router.push("/profil"); // Preusmjeri običnog korisnika na /profil
             }
           } else {
             alert("Neispravni podaci za prijavu!");
@@ -111,7 +111,7 @@ export default {
 
 <style scoped>
 .login-page {
-  background-color: #f5f5f5;
+  background-color: #fff5eb;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
