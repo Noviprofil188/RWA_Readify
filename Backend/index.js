@@ -477,57 +477,6 @@ app.get("/api/korisnici", (req, res) => {
   });
 });
 
-// Ruta za dodavanje knjige u favorite
-app.post("/api/favoriti", (req, res) => {
-  const { korisnik_id, knjiga_id } = req.body;
-
-  if (!korisnik_id || !knjiga_id) {
-    return res.status(400).json({ error: 'korisnik_id i knjiga_id su obavezni' });
-  }
-
-  // Provjeri postoji li korisnik
-  const provjeriKorisnikaQuery = 'SELECT * FROM korisnici WHERE id = ?';
-  connection.query(provjeriKorisnikaQuery, [korisnik_id], (err, korisnikRezultat) => {
-    if (err) {
-      return res.status(500).json({ error: 'Greška pri provjeri korisnika' });
-    }
-    if (korisnikRezultat.length === 0) {
-      return res.status(404).json({ error: 'Korisnik nije pronađen' });
-    }
-
-    // Provjeri postoji li knjiga
-    const provjeriKnjiguQuery = 'SELECT * FROM knjige WHERE id = ?';
-    connection.query(provjeriKnjiguQuery, [knjiga_id], (err, knjigaRezultat) => {
-      if (err) {
-        return res.status(500).json({ error: 'Greška pri provjeri knjige' });
-      }
-      if (knjigaRezultat.length === 0) {
-        return res.status(404).json({ error: 'Knjiga nije pronađena' });
-      }
-
-      // Provjeri je li knjiga već u favoritima korisnika
-      const provjeriFavoriteQuery = 'SELECT * FROM favoriti WHERE korisnik_id = ? AND knjiga_id = ?';
-      connection.query(provjeriFavoriteQuery, [korisnik_id, knjiga_id], (err, favoriteRezultat) => {
-        if (err) {
-          return res.status(500).json({ error: 'Greška pri provjeri favorita' });
-        }
-        if (favoriteRezultat.length > 0) {
-          return res.status(400).json({ error: 'Knjiga je već u favoritima' });
-        }
-
-        // Dodaj knjigu u favorite
-        const dodajFavoriteQuery = 'INSERT INTO favoriti (korisnik_id, knjiga_id) VALUES (?, ?)';
-        connection.query(dodajFavoriteQuery, [korisnik_id, knjiga_id], (err, rezultat) => {
-          if (err) {
-            return res.status(500).json({ error: 'Greška pri dodavanju u favorite' });
-          }
-          return res.status(201).json({ message: 'Knjiga dodana u favorite', id: rezultat.insertId });
-        });
-      });
-    });
-  });
-});
-
 // Pokretanje servera
 app.listen(port, () => {
   console.log("Server running at port: " + port);
