@@ -43,7 +43,7 @@ export default {
         );
         console.log("Registracija uspješna:", response.data);
         alert("Registracija uspješna!");
-        router.push("/popis_knjiga"); // Ovo treba preusmjeriti na stranicu profila
+        router.push("/"); // Ovo treba preusmjeriti na stranicu profila
       } catch (error) {
         console.error("Greška pri registraciji:", error);
         alert(error.response?.data?.message || "Greška na serveru.");

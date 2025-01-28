@@ -36,17 +36,6 @@
           <q-item-label caption>Godina izdanja: {{ knjiga.godina_izdanja }}</q-item-label>
           <q-item-label caption>Žanr: {{ knjiga.zanr }}</q-item-label>
         </q-item-section>
-
-        <!-- Gumb za brisanje knjige -->
-        <q-item-section side>
-          <q-btn
-            color="negative"
-            icon="delete"
-            @click="deleteBook(knjiga.id)"
-            label="Izbriši"
-            dense
-          />
-        </q-item-section>
       </q-item>
     </q-list>
   </div>

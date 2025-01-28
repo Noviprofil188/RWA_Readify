@@ -26,7 +26,7 @@ const routes = [
     meta: { requiresAuth: true, role: 'admin' }, // Provjera autentifikacije i uloge
     children: [
       { path: '', component: () => import('pages/AdminPage.vue') }, // Glavna admin stranica
-      { path: 'popis_knjiga', component: () => import('pages/PopisKnjigaPage.vue') }, // Popis knjiga
+      { path: 'popis_knjiga_admin', component: () => import('pages/popis_knjigaPage.vue') }, // Popis knjiga
       { path: 'pretrazivanje', component: () => import('pages/PretrazivanjePage.vue') }, // Pretraživanje knjiga
       { path: 'popis_korisnika', component: () => import('pages/PopisKorisnikaPage.vue') }, // Pregled korisnika
       { path: 'unos_knjiga', component: () => import('pages/UnosKnjigaPage.vue') }, // Unos knjiga

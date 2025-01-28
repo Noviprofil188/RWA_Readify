@@ -1,11 +1,9 @@
 <template>
   <q-item
     clickable
-    :tag="props.action ? 'div' : (isExternalLink ? 'a' : 'router-link')"
-    :target="isExternalLink ? '_blank' : undefined"
-    :href="isExternalLink ? props.link : undefined"
-    :to="!isExternalLink && !props.action ? props.link : undefined"
-    @click="handleClick"
+    tag="a"
+    target="_blank"
+    :href="props.link"
   >
     <q-item-section
       v-if="props.icon"
@@ -22,42 +20,29 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-
 defineOptions({
   name: 'EssentialLink'
-});
+})
 
 const props = defineProps({
   title: {
     type: String,
     required: true
   },
+
   caption: {
     type: String,
     default: ''
   },
+
   link: {
     type: String,
     default: '#'
   },
+
   icon: {
     type: String,
     default: ''
-  },
-  action: {
-    type: Function,
-    default: null
   }
-});
-
-const isExternalLink = computed(() => {
-  return props.link.startsWith('http://') || props.link.startsWith('https://');
-});
-
-const handleClick = () => {
-  if (props.action) {
-    props.action(); // Pozovi akciju ako postoji
-  }
-};
+})
 </script>
