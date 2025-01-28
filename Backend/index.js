@@ -2,9 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
+const session = require("express-session");
 
 const app = express();
 const port = 3000;
+
 
 // Parser za JSON podatke
 app.use(bodyParser.json());
@@ -14,6 +16,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Omogući CORS za komunikaciju s frontendom
 app.use(cors());
+
+// Konfiguracija sesije
+app.use(
+  session({
+    secret: "tajniKljucZaSesiju", // Tajni ključ za potpisivanje sesije
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Postavite na true ako koristite HTTPS
+  })
+);
 
 // Spajanje na bazu podataka
 const connection = mysql.createConnection({
@@ -27,6 +39,15 @@ connection.connect(function (err) {
   if (err) throw err;
   console.log("Connected to the database!");
 });
+
+// Middleware za provjeru je li korisnik admin
+const checkAdminRole = (req, res, next) => {
+  if (req.session.user && req.session.user.role === "admin") {
+    next(); // Ako je korisnik admin, nastavi s izvršavanjem
+  } else {
+    res.status(403).json({ message: "Nemate ovlasti za ovu akciju." });
+  }
+};
 
 // Ruta za dohvat broja knjiga
 app.get("/api/knjige/count", (req, res) => {
@@ -50,6 +71,26 @@ app.get("/api/rezervacija/count", (req, res) => {
       res.status(500).json({ message: "Greška na serveru." });
     } else {
       res.status(200).json(results[0]);
+    }
+  });
+});
+
+// Ruta za registraciju korisnika
+app.post("/api/korisnici", (req, res) => {
+  const { ime, prezime, username, email, lozinka } = req.body;
+
+  if (!ime || !prezime || !username || !email || !lozinka) {
+    return res.status(400).json({ message: "Molimo unesite sve potrebne podatke." });
+  }
+
+  const query = "INSERT INTO korisnici (ime, prezime, username, email, lozinka, uloga) VALUES (?, ?, ?, ?, ?, 'korisnik')";
+
+  connection.query(query, [ime, prezime, username, email, lozinka], (error, results) => {
+    if (error) {
+      console.error("Greška pri registraciji korisnika:", error);
+      res.status(500).json({ message: "Greška na serveru." });
+    } else {
+      res.status(201).json({ message: "Korisnik uspješno registriran.", id: results.insertId });
     }
   });
 });
@@ -226,38 +267,72 @@ app.put("/api/knjige/:id", (req, res) => {
   });
 });
 
-// Ruta za dohvat svih rezervacija
+// Ruta za dohvat svih rezervacija s korisničkim imenima
 app.get("/api/rezervacija", (req, res) => {
   const query = `
-  SELECT r.id, r.korisnik, r.knjiga, r.datum_rez AS datum_rezervacije, k.username 
-  FROM rezervacija r
-  JOIN korisnici k ON r.korisnik = k.id`;
-  
+      SELECT r.id, r.datum_rez, r.korisnik, r.knjiga, r.status, 
+             k.username AS korisnik_username
+      FROM rezervacija r
+      JOIN korisnici k ON r.korisnik = k.id;
+  `;
+
   connection.query(query, (error, results) => {
     if (error) {
-      console.error("Greška pri dohvaćanju rezervacija:", error);
-      res.status(500).json({ message: "Greška na serveru." });
-    } else {
-      res.status(200).json(results);
+      console.error("Greška prilikom dohvata rezervacija:", error);
+      return res.status(500).send("Greška u bazi podataka");
     }
+    res.json(results); // Vratite rezultate u JSON formatu
   });
 });
 
 // Ruta za dodavanje rezervacije
 app.post("/api/rezervacija", (req, res) => {
-  const { korisnik_id, knjiga_id, datum_rezervacije } = req.body;
+  const { korisnik, knjiga, datum_rez } = req.body; // Koristite korisnik (ID) umjesto username
 
-  if (!korisnik_id || !knjiga_id || !datum_rezervacije) {
+  if (!korisnik || !knjiga || !datum_rez) {
     return res.status(400).json({ message: "Molimo unesite sve potrebne podatke." });
   }
 
-  const query = "INSERT INTO rezervacija (korisnik, knjiga, datum_rez) VALUES (?, ?, ?)";
-  connection.query(query, [korisnik_id, knjiga_id, datum_rezervacije], (error, results) => {
+  // Dohvatite korisnički ID na osnovu korisničkog ID-a
+  const userQuery = "SELECT id FROM korisnici WHERE id = ?";
+  connection.query(userQuery, [korisnik], (error, userResults) => {
     if (error) {
-      console.error("Greška pri dodavanju rezervacije:", error);
+      console.error("Greška pri dohvaćanju korisničkog ID-a:", error);
+      return res.status(500).json({ message: "Greška na serveru." });
+    }
+
+    if (userResults.length === 0) {
+      return res.status(404).json({ message: "Korisnik nije pronađen." });
+    }
+
+    const userId = userResults[0].id;
+
+    // Zatim dodajte rezervaciju koristeći korisnički ID
+    const query = "INSERT INTO rezervacija (korisnik, knjiga, datum_rez) VALUES (?, ?, ?)";
+    connection.query(query, [userId, knjiga, datum_rez], (error, results) => {
+      if (error) {
+        console.error("Greška pri dodavanju rezervacije:", error);
+        return res.status(500).json({ message: "Greška na serveru." });
+      } else {
+        return res.status(201).json({ id: results.insertId, korisnik: userId, knjiga, datum_rez });
+      }
+    });
+  });
+});
+
+// Ruta za brisanje korisnika po ID-u (s provjerom sesije)
+app.delete("/api/korisnici/:id", checkAdminRole, (req, res) => {
+  const { id } = req.params;
+  const query = "DELETE FROM korisnici WHERE id = ?";
+
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error("Greška pri brisanju korisnika:", error);
       res.status(500).json({ message: "Greška na serveru." });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: "Korisnik nije pronađen." });
     } else {
-      res.status(201).json({ id: results.insertId, ...req.body });
+      res.status(200).json({ message: "Korisnik uspješno obrisan." });
     }
   });
 });
@@ -306,18 +381,18 @@ app.get("/api/knjige/search", (req, res) => {
 
 // Ruta za unos knjiga
 app.post("/api/knjige", (req, res) => {
-  const { title, author, genre, year, description } = req.body;
+  const { naslov, autor, zarn, godina_izdanja, } = req.body;
 
-  if (!title || !author || !genre || !year || !description) {
+  if (!naslov || !autor || !zarn || !godina_izdanja) {
     return res
       .status(400)
       .json({ message: "Molimo unesite sve potrebne podatke." });
   }
 
-  const book = [[title, author, genre, year, description]];
+  const book = [[naslov, autor, zarn, godina_izdanja]];
 
   connection.query(
-    "INSERT INTO knjige (naslov, autor, zanr, godina_izdanja, opis) VALUES ?",
+    "INSERT INTO knjige (naslov, autor, zanr, godina_izdanja) VALUES ?",
     [book],
     (error, results) => {
       if (error) {
@@ -335,13 +410,12 @@ app.post("/api/login", (req, res) => {
   const { email, lozinka } = req.body;
 
   if (!email || !lozinka) {
-    return res
-      .status(400)
-      .json({ message: "Molimo unesite email i lozinku." });
+    return res.status(400).json({ message: "Molimo unesite email i lozinku." });
   }
 
   // Provjera za admina (dhaskic)
   if (email === "dhaskic@veleri.hr" && lozinka === "11") {
+    req.session.user = { id: 1, username: "dhaskic", role: "admin" }; // Postavi sesiju
     return res.status(200).json({
       success: true,
       message: "Prijava uspješna!",
@@ -370,11 +444,23 @@ app.post("/api/login", (req, res) => {
     }
 
     // Uspješna prijava korisnika
+    req.session.user = { id: results[0].id, username: email, role: results[0].uloga }; // Postavi sesiju
     res.status(200).json({
       success: true,
       message: "Prijava uspješna!",
       user: { id: results[0].id, username: email, role: results[0].uloga },
     });
+  });
+});
+
+// Ruta za odjavu
+app.post("/api/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Greška pri odjavi:", err);
+      return res.status(500).json({ message: "Greška pri odjavi." });
+    }
+    res.status(200).json({ message: "Odjava uspješna." });
   });
 });
 
@@ -388,6 +474,57 @@ app.get("/api/korisnici", (req, res) => {
     } else {
       res.status(200).json(results);
     }
+  });
+});
+
+// Ruta za dodavanje knjige u favorite
+app.post("/api/favoriti", (req, res) => {
+  const { korisnik_id, knjiga_id } = req.body;
+
+  if (!korisnik_id || !knjiga_id) {
+    return res.status(400).json({ error: 'korisnik_id i knjiga_id su obavezni' });
+  }
+
+  // Provjeri postoji li korisnik
+  const provjeriKorisnikaQuery = 'SELECT * FROM korisnici WHERE id = ?';
+  connection.query(provjeriKorisnikaQuery, [korisnik_id], (err, korisnikRezultat) => {
+    if (err) {
+      return res.status(500).json({ error: 'Greška pri provjeri korisnika' });
+    }
+    if (korisnikRezultat.length === 0) {
+      return res.status(404).json({ error: 'Korisnik nije pronađen' });
+    }
+
+    // Provjeri postoji li knjiga
+    const provjeriKnjiguQuery = 'SELECT * FROM knjige WHERE id = ?';
+    connection.query(provjeriKnjiguQuery, [knjiga_id], (err, knjigaRezultat) => {
+      if (err) {
+        return res.status(500).json({ error: 'Greška pri provjeri knjige' });
+      }
+      if (knjigaRezultat.length === 0) {
+        return res.status(404).json({ error: 'Knjiga nije pronađena' });
+      }
+
+      // Provjeri je li knjiga već u favoritima korisnika
+      const provjeriFavoriteQuery = 'SELECT * FROM favoriti WHERE korisnik_id = ? AND knjiga_id = ?';
+      connection.query(provjeriFavoriteQuery, [korisnik_id, knjiga_id], (err, favoriteRezultat) => {
+        if (err) {
+          return res.status(500).json({ error: 'Greška pri provjeri favorita' });
+        }
+        if (favoriteRezultat.length > 0) {
+          return res.status(400).json({ error: 'Knjiga je već u favoritima' });
+        }
+
+        // Dodaj knjigu u favorite
+        const dodajFavoriteQuery = 'INSERT INTO favoriti (korisnik_id, knjiga_id) VALUES (?, ?)';
+        connection.query(dodajFavoriteQuery, [korisnik_id, knjiga_id], (err, rezultat) => {
+          if (err) {
+            return res.status(500).json({ error: 'Greška pri dodavanju u favorite' });
+          }
+          return res.status(201).json({ message: 'Knjiga dodana u favorite', id: rezultat.insertId });
+        });
+      });
+    });
   });
 });
 
