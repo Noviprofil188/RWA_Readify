@@ -37,6 +37,7 @@
           <q-btn color="negative" label="Obriši" @click="obrisiRezervaciju(props.row.id)" class="q-ml-sm" />
         </q-td>
       </template>
+
     </q-table>
   </q-page>
 </template>
@@ -78,7 +79,7 @@ export default {
       try {
         const response = await axios.get("http://localhost:3000/api/rezervacija");
         this.rezervacije = response.data;
-        console.log("Dohvaćene rezervacije:", this.rezervacije); 
+        console.log("Dohvaćene rezervacije:", this.rezervacije);
       } catch (error) {
         console.error("Greška pri dohvaćanju rezervacija:", error);
         this.$q.notify({ type: "negative", message: "Greška pri dohvaćanju rezervacija." });
@@ -90,7 +91,7 @@ export default {
     async fetchKorisnici() {
       try {
         const response = await axios.get("http://localhost:3000/api/korisnici");
-        console.log("Dohvaćeni korisnici:", response.data); 
+        console.log("Dohvaćeni korisnici:", response.data);
         this.korisnici = response.data;
       } catch (error) {
         console.error("Greška pri dohvaćanju korisnika:", error);

@@ -4,14 +4,7 @@
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
         <!-- Gumb za otvaranje/sklapanje izbornika -->
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <!-- Naslov aplikacije -->
         <q-toolbar-title>
@@ -30,12 +23,7 @@
     </q-header>
 
     <!-- Sidebar (Lijevi izbornik) -->
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      class="bg-grey-2"
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
       <q-list padding>
         <!-- Naslov izbornika -->
         <q-item-label header class="text-weight-bold">
@@ -43,12 +31,7 @@
         </q-item-label>
 
         <!-- Linkovi u izborniku -->
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-          @click="navigateTo(link.route)"
-        />
+        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" @click="navigateTo(link.route)" />
       </q-list>
     </q-drawer>
 
