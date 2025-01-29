@@ -113,7 +113,8 @@ export default {
     },
 
     async dodajRezervaciju() {
-      if (!this.novaRezervacija.korisnik || !this.novaRezervacija.knjiga || !this.novaRezervacija.datum_rez) {
+      if (!this.novaRezervacija.korisnik || !this.novaRezervacija.knjiga || !this.novaRezervacija.datum_rezervacije) {
+        console.log("Greška1", this.novaRezervacija.datum_rezervacije)
         alert("Sva polja su obavezna.");
         return;
       }
@@ -122,7 +123,7 @@ export default {
         const response = await axios.post("http://localhost:3000/api/rezervacija", {
           korisnik: this.novaRezervacija.korisnik, // Provjerite da li server očekuje korisnik_id ili username
           knjiga: this.novaRezervacija.knjiga, // Provjerite da li server očekuje knjiga_id ili knjiga
-          datum_rez: this.novaRezervacija.datum_rez, // Provjerite format datuma
+          datum_rez: this.novaRezervacija.datum_rezervacije, // Provjerite format datuma
         });
 
         this.rezervacije.push(response.data);
@@ -130,7 +131,7 @@ export default {
         // Resetiranje forme
         this.novaRezervacija.korisnik = null;
         this.novaRezervacija.knjiga = null;
-        this.novaRezervacija.datum_rez = "";
+        this.novaRezervacija.datum_rezervacije = "";
 
         alert("Rezervacija uspješno dodana.");
       } catch (error) {
